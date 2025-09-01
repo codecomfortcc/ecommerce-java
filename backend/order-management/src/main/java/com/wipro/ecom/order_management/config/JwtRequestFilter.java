@@ -35,9 +35,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.validateToken(jwt)) {
                 String role = jwtUtil.extractClaim(jwt, claims -> claims.get("role", String.class));
-                Integer userId = jwtUtil.extractClaim(jwt, claims -> claims.get("userId", Integer.class)); // Extract the user ID
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
                 
+                // --- CHANGE 1: ADDED DEBUG LINE FOR THE ROLE ---
+                System.out.println("======> Role Extracted from Token: [" + role + "] <======");
+
+                Integer userId = jwtUtil.extractClaim(jwt, claims -> claims.get("userId", Integer.class));
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+
+                // --- CHANGE 2: ADDED DEBUG LINE FOR THE AUTHORITY ---
+                System.out.println("======> Authority Created: [" + authority.getAuthority() + "] <======");
+
                 // Here we use the user's ID as the principal
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userId, null, Collections.singletonList(authority));

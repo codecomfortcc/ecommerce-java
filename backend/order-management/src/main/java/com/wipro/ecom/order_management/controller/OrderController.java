@@ -27,11 +27,16 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid order data supplied")
     })
     @PostMapping
-    @PreAuthorize("#order.userId == authentication.principal and hasRole('CUSTOMER')")
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order createdOrder = orderService.createOrder(order);
-        return ResponseEntity.ok(createdOrder);
-    }
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Order> createOrder(@RequestBody Order order, Authentication authentication) {
+ 
+      Integer customerId = (Integer) authentication.getPrincipal();
+      
+    
+      Order createdOrder = orderService.createOrder(order, customerId); 
+      
+      return ResponseEntity.ok(createdOrder);
+  }
 
     @Operation(summary = "Get a list of all orders for a specific user")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of orders")
@@ -54,5 +59,14 @@ public class OrderController {
         Integer userId = (Integer) authentication.getPrincipal();
         Order cancelledOrder = orderService.cancelOrder(orderId, userId);
         return ResponseEntity.ok(cancelledOrder);
+    }
+
+    @Operation(summary = "Get a list of all orders (Admin only)")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of all orders")
+    @GetMapping// <-- FIXED: Was '/', now "/"
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Order>> getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 }

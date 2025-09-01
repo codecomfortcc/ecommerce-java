@@ -19,6 +19,9 @@ public class User {
     @Column(nullable = false)
     private String password;
     private String address;
-    private int userType; 
+    private int userType;
+    private String avatar;
     private boolean isLoggedIn = false;
+    // join date automatically set to current date
+    
 }

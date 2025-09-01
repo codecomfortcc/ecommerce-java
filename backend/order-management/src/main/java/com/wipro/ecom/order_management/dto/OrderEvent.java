@@ -1,5 +1,4 @@
-
-package com.wipro.ecom.order_management.dto; 
+package com.wipro.ecom.order_management.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,17 +6,17 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
+@AllArgsConstructor // <-- ADD THIS ANNOTATION
 @NoArgsConstructor
 public class OrderEvent {
-    private String eventType; // e.g., "ORDER_PLACED", "ORDER_CANCELLED"
+    private String eventType;
     private List<OrderItemDetail> items;
 
     @Data
-    @AllArgsConstructor
+    @AllArgsConstructor // <-- This one is likely correct already
     @NoArgsConstructor
     public static class OrderItemDetail {
         private Integer productId;
-        private int quantity;
+        private Integer quantity;
     }
 }

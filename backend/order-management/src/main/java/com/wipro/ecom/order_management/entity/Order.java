@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter // <-- ADD THIS
+@Setter // <-- ADD THIS
 @Data
 @Entity
 @Table(name = "orders")

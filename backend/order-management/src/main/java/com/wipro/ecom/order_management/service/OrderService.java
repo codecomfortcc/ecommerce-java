@@ -20,14 +20,17 @@ public class OrderService {
     private KafkaProducerService kafkaProducerService;
 
     @Transactional
-    public Order createOrder(Order order) {
-        // Publish event to Kafka to decrease stock
+    // --- THIS IS THE FIX ---
+    // The method now accepts the secure customerId
+    public Order createOrder(Order order, Integer customerId) {
+
+        order.setUserId(customerId);
         List<OrderEvent.OrderItemDetail> itemDetails = order.getItems().stream()
             .map(item -> new OrderEvent.OrderItemDetail(item.getProductId(), item.getQuantity()))
             .collect(Collectors.toList());
         
         kafkaProducerService.sendOrderEvent(new OrderEvent("ORDER_PLACED", itemDetails));
-
+        
         order.setOrderDate(LocalDateTime.now());
         order.setOrderStatus("PLACED");
         return orderRepository.save(order);
@@ -56,7 +59,9 @@ public class OrderService {
         order.setOrderStatus("CANCELLED");
         return orderRepository.save(order);
     }
-    
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
     public List<Order> getOrdersByUserId(Integer userId) {
         return orderRepository.findByUserId(userId);
     }

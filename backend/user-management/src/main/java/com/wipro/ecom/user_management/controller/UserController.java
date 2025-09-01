@@ -17,7 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.Map;
 import java.util.List;
 
 @RestController
@@ -65,7 +65,17 @@ public class UserController {
         final User user = userRepository.findByUserId(loginRequest.getUserId()).orElseThrow();
         final String token = jwtUtil.generateToken(user);
 
-        return ResponseEntity.ok(new LoginResponse(token, user.getUserId(), user.getUserType()));
+        return ResponseEntity.ok(new LoginResponse(
+          user.getId(),         // 1. id (Integer)
+          token,                // 2. token (String)
+          user.getUserId(),     // 3. userId (String)
+          user.getUserType(),   // 4. userType (int)
+          user.getFirstName(),    // 5. firstName (String)
+          user.getLastName(),     // 6. lastName (String)
+          user.getAvatar()      // 7. avatar (String)
+  ));
+
+          
     }
 
     // --- User Profile Endpoints ---
@@ -121,4 +131,19 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
+ @PostMapping("/check-username")
+public ResponseEntity<?> checkUsername(@RequestBody Map<String, String> payload) {
+  String username = payload.get("username");
+
+  System.out.println("Checking username: '" + username + "'");
+  if (username == null || username.trim().isEmpty()) {
+
+      return ResponseEntity.ok().body(Map.of("exists", false));
+  }
+  boolean exists = userRepository.findByUserId(username.trim()).isPresent();  
+  System.out.println("Does username exist?: " + exists);
+  return ResponseEntity.ok().body(Map.of("exists", exists));
+
+}
 }
